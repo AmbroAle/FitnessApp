@@ -19,7 +19,7 @@ export default function LoginScreen() {
 
     console.log("ERRORE LOGIN:", e); 
 
-    alert(e.message); 
+    alert(e); 
 
   }
 
