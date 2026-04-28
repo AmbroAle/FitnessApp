@@ -12,13 +12,11 @@ export default function LoginScreen() {
   try {
 
     await login(email, password);
-
     router.replace("/home");
 
   } catch (e) {
-
+    
     console.log("ERRORE LOGIN:", e); 
-
     alert(e); 
 
   }

@@ -1,10 +1,11 @@
-import { View, Text, FlatList, TouchableOpacity, StyleSheet,  } from "react-native";
+import { Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
 import { getAuth } from "firebase/auth";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../services/firebase";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Workout } from "../../types/workout"; 
+import { router } from "expo-router";
 
 export default function HomeScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -38,7 +39,7 @@ export default function HomeScreen() {
           <Text>{item.name} </Text>
         )}
       />
-      <TouchableOpacity style = {styles.button}>
+      <TouchableOpacity style = {styles.button} onPress={() => router.push("/(tabs)/search")}>
         <Text style = {styles.fabIcon}>+</Text>
       </TouchableOpacity>
     </SafeAreaView>
