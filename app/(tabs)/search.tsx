@@ -23,7 +23,7 @@ const BODY_PARTS = [
   "lower arms", 
   "upper legs", 
   "lower legs", 
-  "core",
+  "abs",
   "cardio"
 ];
 
@@ -44,23 +44,24 @@ export default function SearchScreen() {
     Keyboard.dismiss();
 
     try {
-      const response = await fetch(
-        `https://oss.exercisedb.dev/api/v1/exercises/search?search=${query}`
-      );
-      
-      if (!response.ok) throw new Error("Errore durante la ricerca");
 
-      const responseJson = await response.json();
-      if (responseJson.success) {
-        setExercises(responseJson.data); 
-      } else {
-        setExercises([]);
-      }
+        const response = await fetch(
+        `https://oss.exercisedb.dev/api/v1/exercises/search?search=${query}`
+        );
+      
+        if (!response.ok) throw new Error("Errore durante la ricerca");
+
+        const responseJson = await response.json();
+        if (responseJson.success) {
+            setExercises(responseJson.data); 
+        } else {
+            setExercises([]);
+    }
     } catch (err) {
-      console.error(err);
-      setError("Impossibile caricare gli esercizi. Riprova.");
+        console.error(err);
+        setError("Impossibile caricare gli esercizi. Riprova.");
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 
@@ -73,24 +74,28 @@ export default function SearchScreen() {
     Keyboard.dismiss();
 
     try {
-      // Uso la chiamata API specifica per i gruppi muscolari
-      const response = await fetch(
-        `https://oss.exercisedb.dev/api/v1/exercises/bodyparts?bodyParts=${part}`
-      );
-      
-      if (!response.ok) throw new Error("Errore durante il caricamento della categoria");
 
-      const responseJson = await response.json();
-      if (responseJson.success) {
-        setExercises(responseJson.data); 
-      } else {
-        setExercises([]); 
-      }
+        let fetchUrl = `https://oss.exercisedb.dev/api/v1/exercises/bodyparts?bodyParts=${part}`
+
+        if (part.toLowerCase() === "abs") {
+
+            fetchUrl = `https://oss.exercisedb.dev/api/v1/exercises/muscles?targetMuscles=${part}`
+        }
+        const response = await fetch(fetchUrl);
+      
+        if (!response.ok) throw new Error("Errore durante il caricamento della categoria");
+
+        const responseJson = await response.json();
+        if (responseJson.success) {
+            setExercises(responseJson.data); 
+        } else {
+            setExercises([]); 
+        }
     } catch (err) {
-      console.error(err);
-      setError("Impossibile caricare gli esercizi. Riprova.");
+        console.error(err);
+        setError("Impossibile caricare gli esercizi. Riprova.");
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 
