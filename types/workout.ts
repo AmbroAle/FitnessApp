@@ -21,4 +21,5 @@ export type ExerciseResponse = {
 export type Workout = {
   id: string;
   name: string;
+  createdAt: string;
 };
