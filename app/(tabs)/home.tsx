@@ -160,8 +160,7 @@ const styles = StyleSheet.create({
   },
   fabIcon: {
     fontSize: 32,
-    color: "#010101",
-    fontWeight: "bold",
+    color: "black",
     lineHeight: 32, 
   },
   modalOverlay: {

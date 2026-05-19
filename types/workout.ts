@@ -4,18 +4,15 @@ export type Exercise = {
   gifUrl: string;
 };
 
-export type Metadata = {
-  totalExercises: number;
-  totalPages: number;
-  currentPage: number;
-  previousPage: string | null;
-  nextPage: string | null;
-};
-
-export type ExerciseResponse = {
-  success: boolean;
-  metadata: Metadata;
-  data: Exercise[];
+export type ExerciseDetail = {
+  exerciseId: string;
+  name: string;
+  bodyParts: string[];
+  equipments: string[];
+  targetMuscles: string[];
+  secondaryMuscles: string[];
+  gifUrl: string;
+  instructions: string[];
 };
 
 export type Workout = {

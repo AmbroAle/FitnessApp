@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Exercise } from "@/types/workout";
+import { router } from "expo-router";
 
 // Lista dei gruppi muscolari principali
 const BODY_PARTS = [
@@ -156,7 +157,10 @@ export default function SearchScreen() {
           !loading && <Text style={styles.emptyText}>Nessun esercizio trovato.</Text>
         )}
         renderItem={({ item }) => (
-          <View style={styles.card}>
+          <TouchableOpacity 
+            style={styles.card}
+            onPress={() => router.push(`../${item.exerciseId}`)}
+          >
             <Image 
                 source={{ uri: item.gifUrl }}
                 style={styles.cardImage}
@@ -165,7 +169,10 @@ export default function SearchScreen() {
             <View style={styles.cardTextContainer}>
               <Text style={styles.cardTitle}>{item.name}</Text>
             </View>
-          </View>
+            
+            {/* ICONA FRECCIA */}
+            <Text style={styles.chevron}>&gt;</Text>
+          </TouchableOpacity>
         )}
       />
     </SafeAreaView>
@@ -282,5 +289,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textTransform: "capitalize",
+  },
+  chevron: {
+    color: "#888",
+    fontSize: 24,
+    fontWeight: "bold",
+    marginLeft: 10,
   },
 });
