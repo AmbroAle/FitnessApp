@@ -20,3 +20,11 @@ export type Workout = {
   name: string;
   createdAt: string;
 };
+
+export type WorkoutExercise = {
+  id: string;
+  name: string;
+  sets: string;
+  reps: string;
+  createdAt: string;
+};

@@ -5,6 +5,7 @@ import { addDoc, collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../services/firebase";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Workout } from "../../types/workout"; 
+import { router } from "expo-router"; // <-- 1. IMPORTATO IL ROUTER
 
 export default function HomeScreen() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -80,10 +81,21 @@ export default function HomeScreen() {
         data={workouts}
         keyExtractor={(item) => item.id}
         renderItem={({item}) => (
-          <View style={styles.workoutCard}>
-             <Text style={styles.workoutName}>{item.name}</Text>
-             <Text style={styles.workoutDate}>{formatDate(item.createdAt)}</Text>
-          </View>
+          // 2. TRASFORMATO IN TOUCHABLE OPACITY CON NAVIGAZIONE
+          <TouchableOpacity 
+            style={styles.workoutCard}
+            onPress={() => router.push({
+              pathname: "../workout/[id]", // Il percorso della futura pagina
+              params: { id: item.id }    // Passiamo l'ID dell'allenamento
+            })}
+          >
+            <View style={styles.cardTextContainer}>
+              <Text style={styles.workoutName}>{item.name}</Text>
+              <Text style={styles.workoutDate}>{formatDate(item.createdAt)}</Text>
+            </View>
+            
+            <Text style={styles.chevron}>&gt;</Text>
+          </TouchableOpacity>
         )}
       />
       
@@ -135,17 +147,36 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
+  
   workoutCard: {
     backgroundColor: "#1e1e1e",
     padding: 18,
     borderRadius: 12,
     marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  cardTextContainer: {
+    flex: 1, 
   },
   workoutName: {
     color: "white",
     fontSize: 18,
     fontWeight: "600",
+    marginBottom: 4,
   },
+  workoutDate: {
+    color: "#888", 
+    fontSize: 14,
+  },
+  chevron: {
+    color: "#888",
+    fontSize: 24,
+    fontWeight: "bold",
+    marginLeft: 10,
+  },
+
   button: {
     backgroundColor: "#1DB954",
     padding: 15,
@@ -160,7 +191,7 @@ const styles = StyleSheet.create({
   },
   fabIcon: {
     fontSize: 32,
-    color: "black",
+    color: "#010101",
     lineHeight: 32, 
   },
   modalOverlay: {
@@ -199,9 +230,5 @@ const styles = StyleSheet.create({
     color: "#010101",
     fontWeight: "bold",
     fontSize: 16,
-  },
-  workoutDate: {
-    color: "#888", 
-    fontSize: 14,
   },
 });
