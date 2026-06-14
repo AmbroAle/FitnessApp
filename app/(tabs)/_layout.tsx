@@ -1,24 +1,27 @@
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; 
 
 export default function TabLayout() {
   return (
     <Tabs 
       screenOptions={{
-        headerShown: false, // Nasconde la barra in alto
+        headerShown: false, 
+        tabBarShowLabel: false,
         tabBarStyle: { 
-          backgroundColor: '#121212', // Colore del footer
+          backgroundColor: '#121212', 
           borderTopColor: '#333'
         },
-        tabBarActiveTintColor: '#1DB954', // Colore verde quando selezionato
+        tabBarActiveTintColor: '#1DB954', 
+        tabBarInactiveTintColor: '#888',  
       }}
     >
-      {/* Il nome (name) deve corrispondere ESATTAMENTE al nome del file .tsx */}
       <Tabs.Screen 
         name="home" 
         options={{ 
           title: 'Home',
-          tabBarIcon: () => <Text style={{ fontSize: 20 }}>🏠</Text> 
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" size={size} color={color} />
+          ) 
         }} 
       />
       
@@ -26,7 +29,9 @@ export default function TabLayout() {
         name="search" 
         options={{ 
           title: 'Search',
-          tabBarIcon: () => <Text style={{ fontSize: 20 }}>🔍</Text> 
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="search" size={size} color={color} />
+          ) 
         }} 
       />
       
@@ -34,9 +39,12 @@ export default function TabLayout() {
         name="profile" 
         options={{ 
           title: 'Profile',
-          tabBarIcon: () => <Text style={{ fontSize: 20 }}>👤</Text> 
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
+          ) 
         }} 
       />
+
     </Tabs>
   );
 }

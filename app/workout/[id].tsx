@@ -13,7 +13,7 @@ import { useState, useEffect } from "react";
 import { useLocalSearchParams, router, Stack } from "expo-router";
 import { getAuth } from "firebase/auth";
 import { doc, getDoc, collection, onSnapshot, addDoc } from "firebase/firestore";
-import { db } from "../../services/firebase";
+import { db } from "@/services/firebase"; 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WorkoutExercise } from "@/types/workout";
 import { Alert } from "react-native";

@@ -79,14 +79,14 @@ export default function HomeScreen() {
       
       <FlatList
         data={workouts}
+        contentContainerStyle={{ paddingBottom: 100 }}
         keyExtractor={(item) => item.id}
         renderItem={({item}) => (
-          // 2. TRASFORMATO IN TOUCHABLE OPACITY CON NAVIGAZIONE
           <TouchableOpacity 
             style={styles.workoutCard}
             onPress={() => router.push({
-              pathname: "../workout/[id]", // Il percorso della futura pagina
-              params: { id: item.id }    // Passiamo l'ID dell'allenamento
+              pathname: "../workout/[id]", 
+              params: { id: item.id }   
             })}
           >
             <View style={styles.cardTextContainer}>
