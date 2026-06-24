@@ -1,6 +1,6 @@
-# 🏋 Welcome to FitnessApp! 
+#  Welcome to FitnessApp! 
 
-*Your ultimate, pocket-sized workout companion built with React Native & Expo.* 📱🏃‍♂️
+*Your ultimate, pocket-sized workout companion built with React Native & Expo.* 
 
 ---
 
