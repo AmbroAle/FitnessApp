@@ -9,9 +9,11 @@ import { db } from "../../services/firebase";
 export default function ProfileScreen() {
   const user = getAuth().currentUser;
 
-  // Stati per i dati reali
   const [totalWorkouts, setTotalWorkouts] = useState(0);
   const [thisWeekWorkouts, setThisWeekWorkouts] = useState(0);
+  const [lastWorkout, setLastWorkout] = useState("N/A");
+  const [monthlyAvg, setMonthlyAvg] = useState("0");
+  
   const [loading, setLoading] = useState(true);
 
   const userName = user?.displayName || user?.email?.split("@")[0] || "Utente";
@@ -22,22 +24,54 @@ export default function ProfileScreen() {
     const ref = collection(db, "users", user.uid, "workouts");
 
     const unsubscribe = onSnapshot(ref, (snap) => {
-      // 1. Totale workout creati
-      setTotalWorkouts(snap.docs.length);
+      const totale = snap.docs.length;
+      setTotalWorkouts(totale);
 
-      // 2. Calcolo dei workout creati "Questa Settimana" (ultimi 7 giorni)
+      if (totale === 0) {
+        setThisWeekWorkouts(0);
+        setLastWorkout("N/A");
+        setMonthlyAvg("0");
+        setLoading(false);
+        return;
+      }
+
+      const oggi = new Date();
       const setteGiorniFa = new Date();
-      setteGiorniFa.setDate(setteGiorniFa.getDate() - 7);
+      setteGiorniFa.setDate(oggi.getDate() - 7);
 
-      const counterSettimanale = snap.docs.filter(doc => {
-        const data = doc.data();
-        if (!data.createdAt) return false;
-        
-        const dataCreazione = new Date(data.createdAt);
-        return dataCreazione >= setteGiorniFa;
-      }).length;
+      // Estraiamo tutte le date valide e le ordiniamo dalla più recente alla più vecchia
+      const dateWorkouts = snap.docs
+        .map(doc => {
+          const data = doc.data();
+          return data.createdAt ? new Date(data.createdAt) : null;
+        })
+        .filter((date): date is Date => date !== null)
+        .sort((a, b) => b.getTime() - a.getTime());
 
+      // 1. THIS WEEK
+      const counterSettimanale = dateWorkouts.filter(data => data >= setteGiorniFa).length;
       setThisWeekWorkouts(counterSettimanale);
+
+      // 2. ULTIMO ALLENAMENTO
+      const ultimaData = dateWorkouts[0]; // La prima dell'array è la più recente
+      // Calcolo differenza in giorni (arrotondata a mezzanotte per evitare bug con le ore)
+      const diffTime = Date.UTC(oggi.getFullYear(), oggi.getMonth(), oggi.getDate()) - 
+                       Date.UTC(ultimaData.getFullYear(), ultimaData.getMonth(), ultimaData.getDate());
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays === 0) setLastWorkout("Oggi");
+      else if (diffDays === 1) setLastWorkout("Ieri");
+      else setLastWorkout(`${diffDays} gg fa`);
+
+      // 3. MEDIA MENSILE
+      const dataPiuVecchia = dateWorkouts[dateWorkouts.length - 1]; // L'ultima dell'array
+      const giorniAttivi = (oggi.getTime() - dataPiuVecchia.getTime()) / (1000 * 60 * 60 * 24);
+      // Trasformiamo i giorni in mesi (circa 30.44 giorni in un mese medio). Se è meno di 1 mese, usiamo 1.
+      const mesiAttivi = Math.max(1, giorniAttivi / 30.44);
+      
+      const media = (totale / mesiAttivi).toFixed(1); // Mantiene solo 1 decimale (es. 12.5)
+      setMonthlyAvg(media);
+
       setLoading(false);
     }, (error) => {
       console.error("Errore nel recupero delle statistiche:", error);
@@ -61,20 +95,18 @@ export default function ProfileScreen() {
         
         <View style={styles.profileCard}>
           
-          {/* Avatar e Nome REALE */}
           <View style={styles.userInfoRow}>
             <View style={styles.avatarContainer}>
               <Ionicons name="person-outline" size={40} color="black" />
             </View>
             <View style={styles.userInfoText}>
               <Text style={styles.userName}>{userName}</Text>
+              <Text style={styles.userSubtitle}>Fitness Enthusiast</Text>
             </View>
           </View>
 
-          {/* Statistiche REALI */}
+          {/* PRIMA RIGA DI STATISTICHE */}
           <View style={styles.statsRow}>
-            
-            {/* Box 1: Workouts Totali */}
             <View style={styles.statBox}>
               <View style={styles.statHeader}>
                 <Ionicons name="trophy-outline" size={16} color="#1DB954" />
@@ -83,7 +115,6 @@ export default function ProfileScreen() {
               <Text style={styles.statValue}>{totalWorkouts}</Text>
             </View>
 
-            {/* Box 2: Workout negli ultimi 7 giorni */}
             <View style={styles.statBox}>
               <View style={styles.statHeader}>
                 <Ionicons name="trending-up-outline" size={16} color="#1DB954" />
@@ -91,8 +122,28 @@ export default function ProfileScreen() {
               </View>
               <Text style={styles.statValue}>{thisWeekWorkouts}</Text>
             </View>
-
           </View>
+
+          {/* SECONDA RIGA DI STATISTICHE (Nuova) */}
+          <View style={[styles.statsRow, { marginTop: 15 }]}>
+            <View style={styles.statBox}>
+              <View style={styles.statHeader}>
+                <Ionicons name="calendar-outline" size={16} color="#1DB954" />
+                <Text style={styles.statLabel}>LATEST</Text>
+              </View>
+              {/* Ho ridotto un po' la dimensione del testo se la stringa è lunga ("12 gg fa") */}
+              <Text style={[styles.statValue, { fontSize: 22 }]}>{lastWorkout}</Text>
+            </View>
+
+            <View style={styles.statBox}>
+              <View style={styles.statHeader}>
+                <Ionicons name="stats-chart-outline" size={16} color="#1DB954" />
+                <Text style={styles.statLabel}>MONTHLY AVG</Text>
+              </View>
+              <Text style={styles.statValue}>{monthlyAvg}</Text>
+            </View>
+          </View>
+
         </View>
 
         <View style={styles.menuContainer}>
